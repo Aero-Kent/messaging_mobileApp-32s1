@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableHighlight, BackHandler, Alert } from 'react-native';
 import Status from './components/Status'; 
 import MessageList from './components/MessageList';
+import Toolbar from "./components/Toolbar"; 
 import { createImageMessage, createLocationMessage, createTextMessage } from './utils/MessageUtils';
 import React from 'react';
 
@@ -16,7 +17,43 @@ export default class App extends React.Component {
       }),
     ],
     fullScreenImageId: null,
+    isInputFocused: false, 
   };
+
+  handlePressToolbarCamera = () => { 
+    // ... 
+  }; 
+  
+  handlePressToolbarLocation = () => { 
+    // ... 
+  }; 
+  
+  handleChangeFocus = (isFocused) => { 
+    this.setState({ isInputFocused: isFocused }); 
+  }; 
+  
+  handleSubmit = (text) => { 
+    const { messages } = this.state; 
+    this.setState({ 
+      messages: [createTextMessage(text), ...messages], 
+    }); 
+  }; 
+  
+  renderToolbar() { 
+    const { isInputFocused } = this.state; 
+    return ( 
+      <View style={styles.toolbar}> 
+        <Toolbar 
+          isFocused={isInputFocused} 
+          onSubmit={this.handleSubmit} 
+          onChangeFocus={this.handleChangeFocus} 
+          onPressCamera={this.handlePressToolbarCamera} 
+          onPressLocation={this.handlePressToolbarLocation} 
+        />
+      </View> 
+    ); 
+  }
+  // ... 
 
   dismissFullScreenImage = () => {
     this.setState({ fullScreenImageId: null });
@@ -47,7 +84,9 @@ export default class App extends React.Component {
         );
         break;
       case 'image':
-        this.setState({ fullScreenImageId: id });
+        this.setState({ fullScreenImageId: id,
+                        isInputFocused: false,
+         });
         break
       default:
         break;
@@ -98,15 +137,15 @@ export default class App extends React.Component {
         
         <Status/>
         {this.renderMessageList()}
+        {this.renderToolbar()}
         {/* wasn't provided in given so I manually inserted instead
-        {this.renderToolbar()} 
         {this.renderInputMethodEditor()} */}        
         <View style={styles.inputMethodEditor}>
           <Text>This is the IME</Text>
         </View>
-        <View style={styles.toolbar}>
+        {/* <View style={styles.toolbar}>
           <Text>This is the toolbar</Text>
-        </View>
+        </View> */}
         {this.renderFullscreenImage()}      
       </View>
     );
